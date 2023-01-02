@@ -6,7 +6,17 @@ import AppsIcon from "@mui/icons-material/Apps";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { Avatar, IconButton } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, selectUser } from "./features/userSlice";
+import { auth } from "./firebase";
 const Header = () => {
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
+  const signOut = () => {
+    auth.signOut().then(() => {
+      dispatch(logout());
+    });
+  };
   return (
     <div className="header">
       {/* Header left */}
@@ -14,8 +24,11 @@ const Header = () => {
         <IconButton>
           <MenuIcon />
         </IconButton>
-        <img src="img/gmailLogo.png" alt="" />{" "}
-        {/*Come back to add a image linke */}
+        <img
+          src="https://logos-world.net/wp-content/uploads/2020/11/Gmail-Emblem-700x394.png"
+          alt=""
+        />{" "}
+        {/*Come back to add a image link */}
       </div>
       {/* Header middle */}
       <div className="header_middle">
@@ -31,7 +44,7 @@ const Header = () => {
         <IconButton>
           <NotificationsIcon />
         </IconButton>
-        <Avatar />
+        <Avatar src={user?.photoUrl} onClick={signOut} />
       </div>
     </div>
   );

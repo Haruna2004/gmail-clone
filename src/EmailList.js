@@ -1,5 +1,5 @@
 import { Checkbox, IconButton } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./EmailList.css";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import RedoIcon from "@mui/icons-material/Redo";
@@ -13,8 +13,24 @@ import PeopleIcon from "@mui/icons-material/People";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import Section from "./Section";
 import EmailRow from "./EmailRow";
+import { db } from "./firebase";
 
 const EmailList = () => {
+  const [emails, setEmails] = useState([]);
+
+  useEffect(() => {
+    db.collection("email")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapShot) =>
+        setEmails(
+          snapShot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        )
+      );
+  }, []);
+
   return (
     <div className="emailList">
       <div className="emailList_settings">
@@ -53,24 +69,16 @@ const EmailList = () => {
       </div>
 
       <div className="emailList_List">
-        <EmailRow
-          title="Twitch"
-          subject="Hey fellow streamer"
-          description="This is a test"
-          time="10pm"
-        />
-        <EmailRow
-          title="Twitch"
-          subject="Hey fellow streamer"
-          description="This is a testThis is a testThis is a testThis is a testThis is a testThis is a testThis is a testThis is a testThis is a testThis is a testThis is a test"
-          time="10pm"
-        />
-        <EmailRow
-          title="Twitch"
-          subject="Hey fellow streamer"
-          description="This is a test"
-          time="10pm"
-        />
+        {emails.map(({ id, data: { to, subject, message, timestamp } }) => (
+          <EmailRow
+            id={id}
+            key={id}
+            title={to}
+            subject={subject}
+            description={message}
+            time={new Date(timestamp?.seconds * 1000).toUTCString()}
+          />
+        ))}
       </div>
     </div>
   );

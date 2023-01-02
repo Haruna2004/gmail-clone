@@ -17,14 +17,12 @@ const SendMail = () => {
       message: formData.message,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
-
     dispatch(closeSendMessage());
   };
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
   return (
